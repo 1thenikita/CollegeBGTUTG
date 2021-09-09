@@ -21,7 +21,8 @@ export const replacements = async (ctx: Context, user: UsersEntity): Promise<voi
         reply_markup: {
             inline_keyboard: [
                 [
-                    { text: "Вернуться в главное меню", callback_data: "/start"}],
+                    { text: "⬅В главное меню", callback_data: "/start"}
+                ],
             ]
         }
     });

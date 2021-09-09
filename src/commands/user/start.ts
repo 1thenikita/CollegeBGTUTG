@@ -8,7 +8,7 @@ export const start = async (ctx: Context, _user: null): Promise<void> => {
       inline_keyboard: [
         [
             { text:"Выбрать группу", callback_data: "/specialties"}],
-        [   { text:"Просмотр замен на сегодня", callback_data: "/replacements"}]
+        [   { text:"🛎Просмотр замен", callback_data: "/replacements"}]
       ]
     }
   });

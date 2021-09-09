@@ -18,7 +18,7 @@ export const specialties = async (ctx: Context, _user: null): Promise<void> => {
             jsonArr.push(
                 [{
                     // @ts-ignore
-                    text: `Вернуться в главное меню`,
+                    text: `⬅В главное меню`,
                     // @ts-ignore
                     callback_data: `/start`
                 }],
@@ -26,7 +26,7 @@ export const specialties = async (ctx: Context, _user: null): Promise<void> => {
         }
     }
 
-  await ctx.reply( `Выберите свою специальность`
+  await ctx.reply( `Пожалуйста, выберите свою специальность`
   ,{
       reply_markup: {
         inline_keyboard: jsonArr

@@ -35,7 +35,7 @@ export const courses = async (ctx: Context, user: null, idStr: string): Promise<
         }],
         [{
             // @ts-ignore
-            text: `Вернуться в главное меню`,
+            text: `⬅В главное меню`,
             // @ts-ignore
             callback_data: `/start`
         }],

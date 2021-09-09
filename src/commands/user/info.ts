@@ -14,7 +14,11 @@ export const info = async (ctx: Context, user: UsersEntity): Promise<void> => {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: ButtonText, callback_data: "/notification"}],
+          { text: "🛎Посмотр замен", callback_data: "/replacements"}
+        ],
+        [
+          { text: ButtonText, callback_data: "/notification"}
+        ],
       ]
     }
   });
