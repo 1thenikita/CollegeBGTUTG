@@ -20,7 +20,7 @@ app.use(
 app.use(bodyParser.json());
 app.listen(process.env.PORT ? parseInt(process.env.PORT) : 3000, function () {
   // eslint-disable-next-line no-console
-  console.log(`API listening on port ${process.env.API_PORT}!`);
+  console.log(`API listening on port ${process.env.PORT}!`);
 });
 
 app.use((req, res, next) => {
@@ -134,7 +134,7 @@ app.post('/tu/college/v1.0/group/id=:groupId/message/send', async (req, res) => 
   }).status(200);
 });
 
-app.post('/tu/college/v1.0/user/id=:id/message', async (req, res) => {
+app.post('/tu/college/v1.0/user/id=:id/message/send', async (req, res) => {
   if (!req.params.id || !req.query.text)
     return res.json({
       success: false,
