@@ -5,6 +5,7 @@ import {
 } from 'typeorm';
 import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
 import {GroupsEntity} from "./Groups.entity"
+import moment from "moment";
 
 @Entity('Replacements')
 export class ReplacementsEntity {
@@ -36,5 +37,12 @@ export class ReplacementsEntity {
 
   delete(): Promise<DeleteResult> {
     return getRepository(ReplacementsEntity).delete(this.ID);
+  }
+
+  public static async getReplacements(dateFuture: number | null): Promise<ReplacementsEntity[]> {
+    const date = moment();
+    dateFuture : date.add(dateFuture, "d");
+
+    return getRepository(ReplacementsEntity).find({ where: { Date: date.format('YYYY-MM-DD') } });
   }
 }

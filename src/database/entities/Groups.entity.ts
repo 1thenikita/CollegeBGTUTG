@@ -45,9 +45,10 @@ export class GroupsEntity {
     return getRepository(UsersEntity).find({ where: { Group: this.ID, NotificationStatus: Notification } });
   }
 
-  public async getReplacements(): Promise<ReplacementsEntity[]> {
-    const date = moment().toDate();
+  public async getReplacements(dateFuture: number | null): Promise<ReplacementsEntity[]> {
+    const date = moment();
+    dateFuture : date.add(dateFuture, "d");
 
-    return getRepository(ReplacementsEntity).find({ where: { Group: this.ID, Date: date } });
+    return getRepository(ReplacementsEntity).find({ where: { Group: this.ID, Date: date.format('YYYY-MM-DD') } });
   }
 }
