@@ -15,6 +15,17 @@ export const setgroup = async (ctx: Context, user: UsersEntity, idStr: string): 
   user.Group = group;
   await user.save();
 
-  await ctx.telegram.sendMessage(user.ID, `Вы изменили параметр\nВаша группа: ${group.Name}`);
+  await ctx.telegram.sendMessage(user.ID, `Вы изменили параметр\nВаша группа: ${group.Name}`,{
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: "🚪Информация о профиле", callback_data: "/info"}
+        ],
+        [
+          { text: "⬅В главное меню", callback_data: "/start"}
+        ],
+      ]
+    }
+  });
 };
 
