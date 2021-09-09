@@ -18,7 +18,7 @@ app.use(
 );
 
 app.use(bodyParser.json());
-app.listen(process.env.API_PORT, function () {
+app.listen(process.env.PORT || 3000, function () {
   // eslint-disable-next-line no-console
   console.log(`API listening on port ${process.env.API_PORT}!`);
 });
