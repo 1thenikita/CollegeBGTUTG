@@ -13,7 +13,7 @@ export const replacements = async (ctx: Context, user: UsersEntity): Promise<voi
     const text = replacement
         .map(
             (repl) =>
-                `Вместо ${repl.InsteadOf} будет ${repl.Replacing} на ${repl.Pair} паре в кабинете ${repl.Cabinet}`,
+                `Вместо предмета <b>${repl.InsteadOf}</b> будет предмет <b>${repl.Replacing}</b> на ${repl.Pair} паре в кабинете ${repl.Cabinet}`,
         )
         .join('\n');
 
@@ -21,7 +21,7 @@ export const replacements = async (ctx: Context, user: UsersEntity): Promise<voi
     const textAddDay  = replacementAddDay
         .map(
             (repl) =>
-                `Вместо  ${repl.InsteadOf} будет ${repl.Replacing} на ${repl.Pair} паре в кабинете ${repl.Cabinet}`,
+                `Вместо предмета <b>${repl.InsteadOf}</b> будет предмет <b>${repl.Replacing}</b> на ${repl.Pair} паре в кабинете ${repl.Cabinet}`,
         )
         .join('\n');
 
@@ -35,6 +35,6 @@ export const replacements = async (ctx: Context, user: UsersEntity): Promise<voi
                     { text: "⬅В главное меню", callback_data: "/start"}
                 ],
             ]
-        }
+        }, parse_mode: 'HTML'
     });
 };
