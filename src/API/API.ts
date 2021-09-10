@@ -6,6 +6,8 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import {bot} from "../client";
 import { GroupsEntity } from "../database/entities/Groups.entity";
+import {ReplacementsEntity} from "../database/entities/Replacements.entity";
+import moment from "moment";
 
 const app = express();
 
@@ -119,7 +121,7 @@ app.post('/tu/college/v1.0/group/id=:groupId/message/send', async (req, res) => 
   if (users.length === 0)
     return res.json({
       success: false,
-      message: 'No find users with this groups',
+      message: 'No find users with notifications turned on',
     }).status(404);
 
   for (let i = 0; i < users.length; i++){
@@ -130,7 +132,88 @@ app.post('/tu/college/v1.0/group/id=:groupId/message/send', async (req, res) => 
   res.json({
     success: true,
     message: `Message sending in ${users.length} peoples`,
-    count: users.length,
+  }).status(200);
+});
+
+app.post('/tu/college/v1.0/group/id=:groupId/replacement/id=:replacementId/sendAdd', async (req, res) => {
+  if (!req.params.groupId || !req.params.replacementId)
+    return res.json({
+      success: false,
+      message: 'We need text in params!',
+    }).status(400);
+
+  const group = await getRepository(GroupsEntity).findOne({ ID: parseInt(req.params.groupId) });
+  if(!group)
+    return res.json({
+      success: false,
+      message: 'No find group',
+    }).status(404);
+
+  const replacement = await getRepository(ReplacementsEntity).findOne({ID: parseInt(req.params.replacementId), Group: group});
+  if(!replacement)
+    return res.json({
+      success: false,
+      message: 'No find replacement',
+    }).status(404);
+
+  const users = await group.getMembers(true);
+  if (users.length === 0)
+    return res.json({
+      success: false,
+      message: 'No find users with notifications turned on',
+    }).status(404);
+
+  const dateStr = moment(replacement.Date, 'YYYY-MM-DD').locale('ru').format('DD MMMM');
+
+  for (let i = 0; i < users.length; i++){
+    if(users[i].NotificationStatus)
+      await bot.telegram.sendMessage(users[i].ID, `Вашей группе выставили замену на ${dateStr}\nВместо предмета <b>${replacement.InsteadOf}</b> будет предмет <b>${replacement.Replacing}</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`, { parse_mode: "HTML" })
+  }
+
+  res.json({
+    success: true,
+    message: `Message sending in ${users.length} peoples`,
+  }).status(200);
+});
+
+app.post('/tu/college/v1.0/group/id=:groupId/replacement/id=:replacementId/sendDelete', async (req, res) => {
+  if (!req.params.groupId || !req.params.replacementId)
+    return res.json({
+      success: false,
+      message: 'We need text in params!',
+    }).status(400);
+
+  const group = await getRepository(GroupsEntity).findOne({ ID: parseInt(req.params.groupId) });
+  if(!group)
+    return res.json({
+      success: false,
+      message: 'No find group',
+    }).status(404);
+
+  const replacement = await getRepository(ReplacementsEntity).findOne({ID: parseInt(req.params.replacementId), Group: group});
+  if(!replacement)
+    return res.json({
+      success: false,
+      message: 'No find replacement',
+    }).status(404);
+
+  const users = await group.getMembers(true);
+  if (users.length === 0)
+    return res.json({
+      success: false,
+      message: 'No find users with notifications turned on',
+    }).status(404);
+
+  const dateStr = moment(replacement.Date, 'YYYY-MM-DD').locale('ru').format('DD MMMM');
+
+  for (let i = 0; i < users.length; i++){
+    if(users[i].NotificationStatus)
+      await bot.telegram.sendMessage(users[i].ID, `Вашей группе <b>удалили замену</b> на ${dateStr}\nВместо предмета <b>${replacement.InsteadOf} НЕ</b> будет предмета <b>${replacement.Replacing}</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`, { parse_mode: "HTML" })
+  }
+
+  res.json({
+    success: true,
+    message: `Message sending in ${users.length} peoples`,
   }).status(200);
 });
 
@@ -152,6 +235,6 @@ app.post('/tu/college/v1.0/user/id=:id/message/send', async (req, res) => {
 
   res.json({
     success: true,
-    message: "Message send",
+    message: "Message sending",
   }).status(200);
 });
