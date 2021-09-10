@@ -31,6 +31,9 @@ export class ReplacementsEntity {
   @Column('date')
   Date!: Date;
 
+  @Column('bit')
+  Status: boolean;
+
   save(): Promise<ReplacementsEntity> {
     return getRepository(ReplacementsEntity).save(this);
   }
@@ -39,9 +42,8 @@ export class ReplacementsEntity {
     return getRepository(ReplacementsEntity).delete(this.ID);
   }
 
-  public static async getReplacements(dateFuture: number | null): Promise<ReplacementsEntity[]> {
-    const date = moment();
-    dateFuture : date.add(dateFuture, "d");
+  public static async getReplacements(dateFuture: number): Promise<ReplacementsEntity[]> {
+    const date = moment().add(dateFuture, "d");
 
     return getRepository(ReplacementsEntity).find({ where: { Date: date.format('YYYY-MM-DD') } });
   }
