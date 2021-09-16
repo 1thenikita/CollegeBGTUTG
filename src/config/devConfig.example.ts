@@ -4,7 +4,12 @@
 */
 
 /*
-export const devConfig = {
+export const defaultConfig = {
   prefix: '/',
+
+  chats: {
+      logChat: '-557749041',
+  },
 };
+
 */
