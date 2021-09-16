@@ -43,7 +43,6 @@ app.get('/tu/college/v1.0/status', async (req, res) => {
 
 app.get('/tu/college/v1.0/group/all', async (req, res) => {
   const groups = await getRepository(GroupsEntity).find();
-
   if (!groups)
     return res.json({
       success: false,
@@ -64,7 +63,6 @@ app.get('/tu/college/v1.0/user/:id', async (req, res) => {
     }).status(400);
 
   const user = await getRepository(UsersEntity).findOne({ ID: parseInt(req.params.id) });
-
   if (!user)
     return res.json({
       success: false,
@@ -85,7 +83,6 @@ app.post('/tu/college/v1.0/users/message/send', async (req, res) => {
     }).status(400);
 
   const user = await getRepository(UsersEntity).find({ NotificationStatus: true });
-
   if (!user)
     return res.json({
       success: false,
@@ -176,8 +173,8 @@ app.post('/tu/college/v1.0/group/id=:groupId/replacement/id=:replacementId/sendA
   }).status(200);
 });
 
-app.post('/tu/college/v1.0/group/id=:groupId/replacement/id=:replacementId/sendDelete', async (req, res) => {
-  if (!req.params.groupId || !req.params.replacementId)
+app.post('/tu/college/v1.0/group/id=:groupId/replacement/id=:replacementId/send', async (req, res) => {
+  if (!req.params.groupId || !req.params.replacementId || !req.query.mode)
     return res.json({
       success: false,
       message: 'We need text in params!',
@@ -206,9 +203,35 @@ app.post('/tu/college/v1.0/group/id=:groupId/replacement/id=:replacementId/sendD
 
   const dateStr = moment(replacement.Date, 'YYYY-MM-DD').locale('ru').format('DD MMMM');
 
+
+  const textAdd = `Вашей группе выставили замену на ${dateStr}\nВместо предмета <b>${replacement.InsteadOf}</b> будет предмет <b>${replacement.Replacing}</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`;
+  const textEdit = `<b>Изменение замены</b>\n\nВашей группе изменили замену на ${dateStr}\nВместо предмета <b>${replacement.InsteadOf}</b> будет предмет <b>${replacement.Replacing}</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`;
+  const textRemove = `<b>Удаление замены</b>\n\nВашей группе <b>удалили замену</b> на ${dateStr}\nВместо предмета <b>${replacement.InsteadOf} НЕ</b> будет предмета <b>${replacement.Replacing}</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`;
+
+
   for (let i = 0; i < users.length; i++){
-    if(users[i].NotificationStatus)
-      await bot.telegram.sendMessage(users[i].ID, `Вашей группе <b>удалили замену</b> на ${dateStr}\nВместо предмета <b>${replacement.InsteadOf} НЕ</b> будет предмета <b>${replacement.Replacing}</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`, { parse_mode: "HTML" })
+    if(users[i].NotificationStatus) {
+      switch (req.query.mode.toString().toLowerCase()){
+        case "add":{
+          await bot.telegram.sendMessage(users[i].ID, textAdd, {parse_mode: "HTML"})
+          break;
+        }
+        case "edit":{
+          await bot.telegram.sendMessage(users[i].ID, textEdit, {parse_mode: "HTML"})
+          break;
+        }
+        case "remove":{
+          await bot.telegram.sendMessage(users[i].ID, textRemove, {parse_mode: "HTML"})
+          break;
+        }
+        default:{
+          return res.json({
+            success: false,
+            message: 'No find mode sending, Modes: add; edit; remove',
+          }).status(404);
+        }
+      }
+    }
   }
 
   res.json({
