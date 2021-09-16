@@ -27,11 +27,14 @@ export class GroupsEntity {
   @Column('text', { default: null })
   Note!: string;
 
+  @Column('bit', { default: false })
+  Paid!: boolean;
+
   @OneToMany(() => UsersEntity, (user) => user.Group)
   Members!: UsersEntity[];
 
   @OneToMany(() => ReplacementsEntity, (replacement) => replacement.Group)
-  Replacements!: UsersEntity[];
+  Replacements!: ReplacementsEntity[];
 
   save(): Promise<GroupsEntity> {
     return getRepository(GroupsEntity).save(this);
@@ -47,8 +50,8 @@ export class GroupsEntity {
 
   public async getReplacements(dateFuture: number | null): Promise<ReplacementsEntity[]> {
     const date = moment();
-    dateFuture : date.add(dateFuture, "d");
+    date.add(dateFuture, "d");
 
-    return getRepository(ReplacementsEntity).find({ where: { Group: this.ID, Date: date.format('YYYY-MM-DD') } });
+    return getRepository(ReplacementsEntity).find({ where: { Group: this.ID, Date: dateFuture ? date.format('YYYY-MM-DD') : moment().format('YYYY-MM-DD') } });
   }
 }
