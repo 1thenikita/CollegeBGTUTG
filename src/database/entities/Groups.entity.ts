@@ -6,7 +6,7 @@ import {
 import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
 import {UsersEntity} from "./Users.entity";
 import { SpecialtiesEntity } from "./Specialties.entity";
-import {ReplacementsEntity} from "./Replacements.entity";
+import { ReplacementsEntity } from "./Replacements.entity";
 import moment from 'moment';
 
 @Entity('Groups')
@@ -29,6 +29,9 @@ export class GroupsEntity {
 
   @Column('bit', { default: false })
   Paid!: boolean;
+
+  @Column('int', { default: false })
+  Course!: number;
 
   @OneToMany(() => UsersEntity, (user) => user.Group)
   Members!: UsersEntity[];

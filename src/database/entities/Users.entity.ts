@@ -2,11 +2,12 @@ import {
   Entity,
   Column,
   PrimaryColumn,
-  getRepository, JoinColumn, ManyToOne,
+  getRepository, JoinColumn, ManyToOne, OneToMany,
 } from 'typeorm';
 import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
 import { GroupsEntity } from "./Groups.entity";
 import {RolesEntity} from "./Roles.entity";
+import {TeachersEntity} from "./Teachers.entity";
 
 @Entity('Users')
 export class UsersEntity {
@@ -26,6 +27,9 @@ export class UsersEntity {
 
   @Column('bit', { default: true })
   NotificationStatus!: boolean;
+
+  @OneToMany(() => TeachersEntity, (teacher) => teacher.User)
+  Teachers!: TeachersEntity[];
 
   save(): Promise<UsersEntity> {
     return getRepository(UsersEntity).save(this);

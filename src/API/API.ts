@@ -20,7 +20,7 @@ app.use(
 );
 
 app.use(bodyParser.json());
-app.listen(process.env.PORT ? parseInt(process.env.PORT) : 3000, function () {
+app.listen(process.env.PORT, function () {
   // eslint-disable-next-line no-console
   console.log(`API listening on port ${process.env.PORT}!`);
 });
@@ -132,47 +132,6 @@ app.post('/tu/college/v1.0/group/id=:groupId/message/send', async (req, res) => 
   }).status(200);
 });
 
-app.post('/tu/college/v1.0/group/id=:groupId/replacement/id=:replacementId/sendAdd', async (req, res) => {
-  if (!req.params.groupId || !req.params.replacementId)
-    return res.json({
-      success: false,
-      message: 'We need text in params!',
-    }).status(400);
-
-  const group = await getRepository(GroupsEntity).findOne({ ID: parseInt(req.params.groupId) });
-  if(!group)
-    return res.json({
-      success: false,
-      message: 'No find group',
-    }).status(404);
-
-  const replacement = await getRepository(ReplacementsEntity).findOne({ID: parseInt(req.params.replacementId), Group: group});
-  if(!replacement)
-    return res.json({
-      success: false,
-      message: 'No find replacement',
-    }).status(404);
-
-  const users = await group.getMembers(true);
-  if (users.length === 0)
-    return res.json({
-      success: false,
-      message: 'No find users with notifications turned on',
-    }).status(404);
-
-  const dateStr = moment(replacement.Date, 'YYYY-MM-DD').locale('ru').format('DD MMMM');
-
-  for (let i = 0; i < users.length; i++){
-    if(users[i].NotificationStatus)
-      await bot.telegram.sendMessage(users[i].ID, `Вашей группе выставили замену на ${dateStr}\nВместо предмета <b>${replacement.InsteadOf}</b> будет предмет <b>${replacement.Replacing}</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`, { parse_mode: "HTML" })
-  }
-
-  res.json({
-    success: true,
-    message: `Message sending in ${users.length} peoples`,
-  }).status(200);
-});
-
 app.post('/tu/college/v1.0/group/id=:groupId/replacement/id=:replacementId/send', async (req, res) => {
   if (!req.params.groupId || !req.params.replacementId || !req.query.mode)
     return res.json({
@@ -203,11 +162,15 @@ app.post('/tu/college/v1.0/group/id=:groupId/replacement/id=:replacementId/send'
 
   const dateStr = moment(replacement.Date, 'YYYY-MM-DD').locale('ru').format('DD MMMM');
 
+  const textAdd = `Вашей группе выставили замену на ${dateStr}\nВместо предмета <b>${replacement.InsteadOfSubject.Name} (${replacement.InsteadOfTeacher.Name})</b> будет предмет <b>${replacement.ReplacingSubject.Name} (${replacement.ReplacingTeacher.Name})</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`;
+  const textEdit = `<b>Изменение замены</b>\n\nВашей группе изменили замену на ${dateStr}\nВместо предмета <b>${replacement.InsteadOfSubject.Name} (${replacement.InsteadOfTeacher.Name})</b> будет предмет <b>${replacement.ReplacingSubject.Name} (${replacement.ReplacingTeacher.Name})</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`;
+  const textRemove = `<b>Удаление замены</b>\n\nВашей группе <b>удалили замену</b> на ${dateStr}\nВместо предмета <b>${replacement.InsteadOfSubject.Name} (${replacement.InsteadOfTeacher.Name}) НЕ</b> будет предмета <b>${replacement.ReplacingSubject.Name} (${replacement.ReplacingTeacher.Name}</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`;
 
-  const textAdd = `Вашей группе выставили замену на ${dateStr}\nВместо предмета <b>${replacement.InsteadOf}</b> будет предмет <b>${replacement.Replacing}</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`;
-  const textEdit = `<b>Изменение замены</b>\n\nВашей группе изменили замену на ${dateStr}\nВместо предмета <b>${replacement.InsteadOf}</b> будет предмет <b>${replacement.Replacing}</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`;
-  const textRemove = `<b>Удаление замены</b>\n\nВашей группе <b>удалили замену</b> на ${dateStr}\nВместо предмета <b>${replacement.InsteadOf} НЕ</b> будет предмета <b>${replacement.Replacing}</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`;
-
+  if(req.query.mode !== "delete" && replacement.Status)
+    return res.json({
+      success: false,
+      message: 'Message already send',
+    }).status(406);
 
   for (let i = 0; i < users.length; i++){
     if(users[i].NotificationStatus) {
