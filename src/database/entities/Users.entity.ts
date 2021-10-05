@@ -16,11 +16,11 @@ export class UsersEntity {
 
   @JoinColumn({ name: 'GroupID'})
   @ManyToOne(() => GroupsEntity, (group) => group.Members)
-  Group!: GroupsEntity | undefined;
+  Group!: GroupsEntity;
 
   @JoinColumn({ name: 'RoleID'})
   @ManyToOne(() => RolesEntity, (role) => role.Users)
-  Role!: number;
+  Role!: RolesEntity | number;
 
   @Column('varchar', { default: null })
   Name!: string;
@@ -43,7 +43,7 @@ export class UsersEntity {
     userID: string,
   ): Promise<UsersEntity> {
     const repository = getRepository(UsersEntity);
-    const user = await (repository.findOne(userID, { relations: ["Group"] }));
+    const user = await (repository.findOne(userID, { relations: ["Group", "Role"] }));
 
     if (user) return user;
 
