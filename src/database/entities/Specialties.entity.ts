@@ -18,7 +18,7 @@ export class SpecialtiesEntity {
   MaxCourse!: number;
 
   @OneToMany(() => GroupsEntity, (group) => group.Speciality)
-  Groups!: GroupsEntity | undefined;
+  Groups!: GroupsEntity[];
 
   save(): Promise<SpecialtiesEntity> {
     return getRepository(SpecialtiesEntity).save(this);

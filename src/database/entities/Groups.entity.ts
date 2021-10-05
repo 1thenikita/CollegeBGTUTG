@@ -55,6 +55,6 @@ export class GroupsEntity {
     const date = moment();
     date.add(dateFuture, "d");
 
-    return getRepository(ReplacementsEntity).find({ where: { Group: this.ID, Date: dateFuture ? date.format('YYYY-MM-DD') : moment().format('YYYY-MM-DD') } });
+    return getRepository(ReplacementsEntity).find({ relations: ['InsteadOfTeacher','InsteadOfSubject','ReplacingTeacher','ReplacingSubject'], where: { Group: this.ID, Date: dateFuture ? date.format('YYYY-MM-DD') : moment().format('YYYY-MM-DD') } });
   }
 }

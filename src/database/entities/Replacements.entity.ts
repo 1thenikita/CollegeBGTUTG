@@ -21,21 +21,21 @@ export class ReplacementsEntity {
   @Column('int', { default: null })
   Pair!: string;
 
-  @ManyToOne(() => TeachersEntity, (teacher) => teacher.ReplacementsInsteadOf)
   @JoinColumn({ name: 'InsteadOfTeacherID'})
+  @ManyToOne(() => TeachersEntity, (teacher) => teacher.ReplacementsInsteadOf)
   InsteadOfTeacher!: TeachersEntity;
 
-  @ManyToOne(() => SubjectsEntity, (subject) => subject.ReplacementsInsteadOf)
   @JoinColumn({ name: 'InsteadOfSubjectID'})
-  InsteadOfSubject!: TeachersEntity;
+  @ManyToOne(() => SubjectsEntity, (subject) => subject.ReplacementsInsteadOf)
+  InsteadOfSubject!: SubjectsEntity;
 
-  @ManyToOne(() => TeachersEntity, (teacher) => teacher.ReplacementsReplacing)
   @JoinColumn({ name: 'ReplacingTeacherID'})
+  @ManyToOne(() => TeachersEntity, (teacher) => teacher.ReplacementsReplacing)
   ReplacingTeacher!: TeachersEntity;
 
-  @ManyToOne(() => SubjectsEntity, (subject) => subject.ReplacementsReplacing)
   @JoinColumn({ name: 'ReplacingSubjectID'})
-  ReplacingSubject!: TeachersEntity;
+  @ManyToOne(() => SubjectsEntity, (subject) => subject.ReplacementsReplacing)
+  ReplacingSubject!: SubjectsEntity;
 
   @Column('varchar', { length: 50 })
   Cabinet!: string;
@@ -57,6 +57,6 @@ export class ReplacementsEntity {
   public static async getReplacements(dateFuture: number): Promise<ReplacementsEntity[]> {
     const date = moment().add(dateFuture, "d");
 
-    return getRepository(ReplacementsEntity).find({ where: { Date: date.format('YYYY-MM-DD') } });
+    return getRepository(ReplacementsEntity).find({ relations: ["Group"], where: { Date: date.format('YYYY-MM-DD') } });
   }
 }
