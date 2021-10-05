@@ -132,28 +132,21 @@ app.post('/tu/college/v1.0/group/id=:groupId/message/send', async (req, res) => 
   }).status(200);
 });
 
-app.post('/tu/college/v1.0/group/id=:groupId/replacement/id=:replacementId/send', async (req, res) => {
-  if (!req.params.groupId || !req.params.replacementId || !req.query.mode)
+app.post('/tu/college/v1.0/replacement/id=:replacementId/send', async (req, res) => {
+  if (!req.params.replacementId || !req.query.mode)
     return res.json({
       success: false,
       message: 'We need text in params!',
     }).status(400);
 
-  const group = await getRepository(GroupsEntity).findOne({ ID: parseInt(req.params.groupId) });
-  if(!group)
-    return res.json({
-      success: false,
-      message: 'No find group',
-    }).status(404);
-
-  const replacement = await getRepository(ReplacementsEntity).findOne({ID: parseInt(req.params.replacementId), Group: group});
+  const replacement = await getRepository(ReplacementsEntity).findOne({ relations: ["Group", 'InsteadOfTeacher','InsteadOfSubject','ReplacingTeacher','ReplacingSubject'], where: { ID: parseInt(req.params.replacementId) } });
   if(!replacement)
     return res.json({
       success: false,
       message: 'No find replacement',
     }).status(404);
 
-  const users = await group.getMembers(true);
+  const users = await replacement.Group.getMembers(true);
   if (users.length === 0)
     return res.json({
       success: false,
@@ -166,7 +159,7 @@ app.post('/tu/college/v1.0/group/id=:groupId/replacement/id=:replacementId/send'
   const textEdit = `<b>Изменение замены</b>\n\nВашей группе изменили замену на ${dateStr}\nВместо предмета <b>${replacement.InsteadOfSubject.Name} (${replacement.InsteadOfTeacher.Name})</b> будет предмет <b>${replacement.ReplacingSubject.Name} (${replacement.ReplacingTeacher.Name})</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`;
   const textRemove = `<b>Удаление замены</b>\n\nВашей группе <b>удалили замену</b> на ${dateStr}\nВместо предмета <b>${replacement.InsteadOfSubject.Name} (${replacement.InsteadOfTeacher.Name}) НЕ</b> будет предмета <b>${replacement.ReplacingSubject.Name} (${replacement.ReplacingTeacher.Name}</b> на ${replacement.Pair} паре в кабинете ${replacement.Cabinet}`;
 
-  if(req.query.mode !== "delete" && replacement.Status)
+  if(req.query.mode !== "remove" && replacement.Status)
     return res.json({
       success: false,
       message: 'Message already send',
