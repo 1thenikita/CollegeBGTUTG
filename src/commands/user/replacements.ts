@@ -13,15 +13,15 @@ export const replacements = async (ctx: Context, user: UsersEntity): Promise<voi
     const text = replacement
         .map(
             (repl) =>
-                `Вместо предмета <b>${repl.InsteadOfSubject.Name} (${repl.InsteadOfTeacher.Name})</b> будет предмет <b>${repl.ReplacingSubject.Name} (${repl.ReplacingTeacher.Name}</b> на ${repl.Pair} паре в кабинете ${repl.Cabinet}`,
+                `Вместо предмета <b>${repl.InsteadOfSubject.Name} (${repl.InsteadOfTeacher.Name})</b> будет предмет <b>${repl.ReplacingSubject.Name} (${repl.ReplacingTeacher.Name})</b> на ${repl.Pair} паре в кабинете ${repl.Cabinet}`
         )
         .join('\n');
 
     const replacementAddDay = user.Group ? await user.Group.getReplacements(1) : await ReplacementsEntity.getReplacements(1);
-    const textAddDay  = replacementAddDay
+    const textAddDay = replacementAddDay
         .map(
             (repl) =>
-                `Вместо предмета <b>${repl.InsteadOfSubject.Name} (${repl.InsteadOfTeacher.Name})</b> будет предмет <b>${repl.ReplacingSubject.Name} (${repl.ReplacingTeacher.Name}</b> на ${repl.Pair} паре в кабинете ${repl.Cabinet}`,
+                `Вместо предмета <b>${repl.InsteadOfSubject.Name} (${repl.InsteadOfTeacher.Name})</b> будет предмет <b>${repl.ReplacingSubject.Name} (${repl.ReplacingTeacher.Name})</b> на ${repl.Pair} паре в кабинете ${repl.Cabinet}`
         )
         .join('\n');
 
