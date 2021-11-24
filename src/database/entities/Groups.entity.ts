@@ -8,6 +8,7 @@ import {UsersEntity} from "./Users.entity";
 import { SpecialtiesEntity } from "./Specialties.entity";
 import { ReplacementsEntity } from "./Replacements.entity";
 import moment from 'moment';
+import {SchedulesEntity} from "./Schedules.entity";
 
 @Entity('Groups')
 export class GroupsEntity {
@@ -39,6 +40,9 @@ export class GroupsEntity {
   @OneToMany(() => ReplacementsEntity, (replacement) => replacement.Group)
   Replacements!: ReplacementsEntity[];
 
+  @OneToMany(() => SchedulesEntity, (schedule) => schedule.Group)
+  Schedules!: SchedulesEntity[];
+
   save(): Promise<GroupsEntity> {
     return getRepository(GroupsEntity).save(this);
   }
@@ -49,6 +53,13 @@ export class GroupsEntity {
 
   public async getMembers(Notification: boolean): Promise<UsersEntity[]> {
     return getRepository(UsersEntity).find({ where: { Group: this.ID, NotificationStatus: Notification } });
+  }
+
+  public async getSchedules(dateFuture: number | null): Promise<SchedulesEntity[]> {
+    const date = moment();
+    date.add(dateFuture, "d");
+
+    return getRepository(SchedulesEntity).find({ relations: ['Teacher'], where: { Group: this.ID, Date: dateFuture ? date.format('YYYY-MM-DD') : moment().format('YYYY-MM-DD') } });
   }
 
   public async getReplacements(dateFuture: number | null): Promise<ReplacementsEntity[]> {
