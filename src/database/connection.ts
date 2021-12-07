@@ -9,6 +9,7 @@ import {SubjectsEntity} from "./entities/Subjects.entity";
 import { startBot } from '../client';
 
 import '../API/API';
+import {SchedulesEntity} from "./entities/Schedules.entity";
 
 createConnection({
     type: process.env.BD_TYPE as 'mssql',
@@ -26,6 +27,7 @@ createConnection({
         ReplacementsEntity,
         TeachersEntity,
         SubjectsEntity,
+        SchedulesEntity,
     ],
     options: {
         encrypt: false,

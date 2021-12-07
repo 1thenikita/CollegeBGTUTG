@@ -6,6 +6,7 @@ import {
 import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
 import {UsersEntity} from "./Users.entity";
 import {ReplacementsEntity} from "./Replacements.entity";
+import {SchedulesEntity} from "./Schedules.entity";
 
 @Entity('Teachers')
 export class TeachersEntity {
@@ -27,6 +28,9 @@ export class TeachersEntity {
 
   @OneToMany(() => ReplacementsEntity, (replacement) => replacement.ReplacingTeacher)
   ReplacementsReplacing!: ReplacementsEntity[];
+
+  @OneToMany(() => SchedulesEntity, (schedule) => schedule.Teacher)
+  Schedules!: SchedulesEntity[];
 
   save(): Promise<TeachersEntity> {
     return getRepository(TeachersEntity).save(this);

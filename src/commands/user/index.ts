@@ -7,6 +7,7 @@ import { specialties } from "./specialties";
 import { speciality } from "./speciality";
 import { replacements } from "./replacements";
 import { courses } from "./courses";
+import {schedules} from "./schedules";
 
 export const userCommands: Commands = {
   start: {
@@ -62,5 +63,12 @@ export const userCommands: Commands = {
     database: true,
     description: 'Отображает замену на выбранной группе',
     execute: replacements,
+  },
+
+  schedules: {
+    params: [],
+    database: true,
+    description: 'Отображает расписание на выбранной группе',
+    execute: schedules,
   },
 };

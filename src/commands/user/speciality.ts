@@ -6,7 +6,7 @@ import moment from "moment";
 
 export const speciality = async (ctx: Context, user: null, idStr: string, courseStr: string): Promise<void> => {
     const specialityID = parseInt(idStr);
-    const cource = (parseInt(courseStr)-1) * -1 ;
+    const cource = parseInt(courseStr);
 
     if(isNaN(specialityID) || isNaN(cource)) return;
 
@@ -15,7 +15,7 @@ export const speciality = async (ctx: Context, user: null, idStr: string, course
 
     const courceYear = moment().add(cource, 'year').format('YY');
 
-    const groups = await getRepository(GroupsEntity).find({Speciality: speciality})
+    const groups = await getRepository(GroupsEntity).find({Speciality: speciality, Course: cource})
     var jsonArr = [];
     for (var i = 0; i < groups.length; i++) {
         if(groups[i].Name.includes(courceYear))

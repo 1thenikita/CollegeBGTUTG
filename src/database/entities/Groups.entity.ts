@@ -59,7 +59,7 @@ export class GroupsEntity {
     const date = moment();
     date.add(dateFuture, "d");
 
-    return getRepository(SchedulesEntity).find({ relations: ['Teacher'], where: { Group: this.ID, Date: dateFuture ? date.format('YYYY-MM-DD') : moment().format('YYYY-MM-DD') } });
+    return getRepository(SchedulesEntity).find({ relations: ["Group", "Teacher", "Subject"], where: { Group: this.ID} });
   }
 
   public async getReplacements(dateFuture: number | null): Promise<ReplacementsEntity[]> {
