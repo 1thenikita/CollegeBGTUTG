@@ -1,5 +1,6 @@
 import { Context } from "telegraf";
 import { UsersEntity } from '../../database/entities/Users.entity';
+import { sendOrEditMessage } from "../../messages";
 
 export const info = async (ctx: Context, user: UsersEntity): Promise<void> => {
 
@@ -8,17 +9,14 @@ export const info = async (ctx: Context, user: UsersEntity): Promise<void> => {
 
   const NotificationStatus = user.NotificationStatus ? "✅Включены" : "❌Выключены";
   const NotificationText = user.NotificationStatus ? "" : "⚠Для получения важной информации рекомендуем включить уведомления.";
-  const ButtonText = user.NotificationStatus ? "❌Выключить уведомления" : "✅Включить уведомления";
+  const buttonText = user.NotificationStatus ? "❌Выключить уведомления" : "✅Включить уведомления";
 
-  await ctx.telegram.sendMessage(user.ID, `Ваша группа: ${GroupName}\nУведомления: ${NotificationStatus}\n\n${GroupText}\n\n${NotificationText}`,{
+  await sendOrEditMessage(ctx, `Ваша группа: ${GroupName}\nУведомления: ${NotificationStatus}\n\n${GroupText}\n\n${NotificationText}`,{
     reply_markup: {
       inline_keyboard: [
-        [
-          { text: "🛎Посмотр замен", callback_data: "/replacements"}
-        ],
-        [
-          { text: ButtonText, callback_data: "/notification"}
-        ],
+        [ { text: "🛎Посмотр замен", callback_data: "/replacements"}],
+        [ { text: buttonText, callback_data: "/notification"} ],
+        [ { text: `⬅В главное меню`, callback_data: `/start` }]
       ]
     }
   });

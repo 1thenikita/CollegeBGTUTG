@@ -1,14 +1,20 @@
 import {
   Entity,
   Column,
-  getRepository, OneToMany, PrimaryGeneratedColumn, JoinColumn, ManyToOne,
+  getRepository,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+  ManyToOne,
+  MoreThanOrEqual,
+  LessThanOrEqual,
 } from 'typeorm';
 import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
-import {UsersEntity} from "./Users.entity";
+import { UsersEntity } from "./Users.entity";
 import { SpecialtiesEntity } from "./Specialties.entity";
 import { ReplacementsEntity } from "./Replacements.entity";
 import moment from 'moment';
-import {SchedulesEntity} from "./Schedules.entity";
+import { SchedulesEntity } from "./Schedules.entity";
 
 @Entity('Groups')
 export class GroupsEntity {
@@ -56,10 +62,14 @@ export class GroupsEntity {
   }
 
   public async getSchedules(dateFuture: number | null): Promise<SchedulesEntity[]> {
-    const date = moment();
-    date.add(dateFuture, "d");
+    const date = moment().add(dateFuture, "d");
+    const repository = getRepository(SchedulesEntity);
+    const currentWeek = date.isoWeek() % 2 == 0 ? 1: 2;
 
-    return getRepository(SchedulesEntity).find({ relations: ["Group", "Teacher", "Subject"], where: { Group: this.ID} });
+    const schedulesMain = await repository.find({ relations: ["Group", "Teacher", "Subject"], where: { Group: this.ID, Weekday: date.weekday(), DateEnd: MoreThanOrEqual(date.toISOString()), DateStart: LessThanOrEqual(date.toISOString()), TypeOfWeek: 0} })
+    const schedulesTypeOfWeek = await repository.find({ relations: ["Group", "Teacher", "Subject"], where: { Group: this.ID, Weekday: date.weekday(), DateEnd: MoreThanOrEqual(date.toISOString()), DateStart: LessThanOrEqual(date.toISOString()), TypeOfWeek: currentWeek} })
+
+    return [...schedulesMain, ...schedulesTypeOfWeek].sort((a, b) => a.Pair - b.Pair);
   }
 
   public async getReplacements(dateFuture: number | null): Promise<ReplacementsEntity[]> {

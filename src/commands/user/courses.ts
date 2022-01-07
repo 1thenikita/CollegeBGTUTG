@@ -1,6 +1,8 @@
 import { Context } from "telegraf";
 import { getRepository } from "typeorm";
 import { SpecialtiesEntity } from "../../database/entities/Specialties.entity";
+import { SendReplyData } from "../../../types";
+import { sendOrEditMessage } from "../../messages";
 
 export const courses = async (ctx: Context, user: null, idStr: string): Promise<void> => {
     const specialityID = parseInt(idStr);
@@ -8,43 +10,19 @@ export const courses = async (ctx: Context, user: null, idStr: string): Promise<
 
     const speciality = await getRepository(SpecialtiesEntity).findOne({ID: specialityID});
     if(!speciality) return;
-    var jsonArr = [];
-    jsonArr.push(
-        [{
-            // @ts-ignore
-            text: `1 курс`,
-            // @ts-ignore
-            callback_data: `/speciality ${speciality.ID}  1`
-        }, {
-            // @ts-ignore
-            text: `2 курс`,
-            // @ts-ignore
-            callback_data: `/speciality ${speciality.ID} 2`
-        }],
-        [{
-            // @ts-ignore
-            text: `3 курс`,
-            // @ts-ignore
-            callback_data: `/speciality ${speciality.ID} 3`
-        },
-        {
-            // @ts-ignore
-            text: `4 курс`,
-            // @ts-ignore
-            callback_data: `/speciality ${speciality.ID} 4`
-        }],
-        [{
-            // @ts-ignore
-            text: `⬅В главное меню`,
-            // @ts-ignore
-            callback_data: `/start`
-        }],
+    var replyArr : SendReplyData[][] = [];
+    replyArr.push(
+        [ {  text: `1 курс`, callback_data: `/speciality ${speciality.ID} 1` },
+            { text: `2 курс`, callback_data: `/speciality ${speciality.ID} 2` }],
+        [{ text: `3 курс`, callback_data: `/speciality ${speciality.ID} 3`},
+         { text: `4 курс`, callback_data: `/speciality ${speciality.ID} 4`}],
+        [{ text: `⬅В главное меню`,callback_data: `/start` }],
     );
 
-  await ctx.reply( `Вы выбали специальность ${speciality.Name}\nПожалуйста, выберите курс`
+    await sendOrEditMessage(ctx, `Вы выбрали специальность ${speciality.Name}\nПожалуйста, выберите курс`
   ,{
       reply_markup: {
-        inline_keyboard: jsonArr
+        inline_keyboard: replyArr
       }
     });
 };

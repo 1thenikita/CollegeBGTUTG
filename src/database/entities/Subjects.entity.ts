@@ -4,8 +4,8 @@ import {
   getRepository, OneToMany, PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
-import {ReplacementsEntity} from "./Replacements.entity";
-import {SchedulesEntity} from "./Schedules.entity";
+import { ReplacementsEntity } from "./Replacements.entity";
+import { SchedulesEntity } from "./Schedules.entity";
 
 @Entity('Subjects')
 export class SubjectsEntity {
@@ -14,6 +14,9 @@ export class SubjectsEntity {
 
   @Column('varchar', { default: null })
   Name!: string;
+
+  @Column('varchar', { default: null })
+  Index: string;
 
   @OneToMany(() => ReplacementsEntity, (replacement) => replacement.InsteadOfSubject)
   ReplacementsInsteadOf!: ReplacementsEntity[];

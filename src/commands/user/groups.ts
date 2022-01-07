@@ -1,35 +1,19 @@
-import {Context} from "telegraf";
-import {getRepository} from "typeorm";
+import { Context } from "telegraf";
+import { getRepository } from "typeorm";
 import { GroupsEntity } from "../../database/entities/Groups.entity";
+import { sendOrEditMessage } from "../../messages";
+import { SendReplyData } from "../../../types";
 
 export const groups = async (ctx: Context): Promise<void> => {
-    const groups = await getRepository(GroupsEntity).find()
-    var jsonArr = [];
-    for (var i = 0; i < groups.length; i++) {
-        jsonArr.push(
-            [{
-                // @ts-ignore
-                text: groups[i].Name,
-                // @ts-ignore
-                callback_data: `/setgroup ${groups[i].ID}`
-            }],
-        );
-        if(i === (groups.length-1)){
-            jsonArr.push(
-                [{
-                    // @ts-ignore
-                    text: `⬅В главное меню`,
-                    // @ts-ignore
-                    callback_data: `/start`
-                }],
-            );
-        }
-    }
+    const groups = await getRepository(GroupsEntity).find();
+    const replyArr: SendReplyData[][] = groups.map((g) => [
+        { text: g.Name, callback_data: `/setgroup ${g.ID}` },
+    ]);
 
-  await ctx.reply( `Выберите свою группу`
+    replyArr.push([{ text: `⬅В главное меню`, callback_data: `/start` }]);
+
+    await sendOrEditMessage(ctx, `Выберите свою группу`
   ,{
-      reply_markup: {
-        inline_keyboard: jsonArr
-      }
+      reply_markup: { inline_keyboard: replyArr }
     });
 };

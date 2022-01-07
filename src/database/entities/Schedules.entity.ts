@@ -1,13 +1,18 @@
 import {
-  Entity,
   Column,
-  getRepository, PrimaryGeneratedColumn, JoinColumn, ManyToOne,
+  Entity,
+  getRepository,
+  JoinColumn,
+  LessThanOrEqual,
+  ManyToOne,
+  MoreThanOrEqual,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
 import moment from 'moment';
-import {GroupsEntity} from "./Groups.entity";
-import {SubjectsEntity} from "./Subjects.entity";
-import {TeachersEntity} from "./Teachers.entity";
+import { GroupsEntity } from "./Groups.entity";
+import { SubjectsEntity } from "./Subjects.entity";
+import { TeachersEntity } from "./Teachers.entity";
 
 @Entity('Schedules')
 export class SchedulesEntity {
@@ -35,11 +40,14 @@ export class SchedulesEntity {
   @Column('varchar', { length: 50 })
   Cabinet!: string;
 
-  @Column('bit', { default: true })
-  IsMain!: boolean;
+  @Column('int')
+  TypeOfWeek!: boolean;
 
-  @Column('bit', { default: false })
-  Fractional!: boolean;
+  @Column('date')
+  DateStart!: Date;
+
+  @Column('date')
+  DateEnd!: Date;
 
   save(): Promise<SchedulesEntity> {
     return getRepository(SchedulesEntity).save(this);
@@ -51,7 +59,12 @@ export class SchedulesEntity {
 
   public static async getSchedules(dateFuture: number): Promise<SchedulesEntity[]> {
     const date = moment().add(dateFuture, "d");
+    const repository = getRepository(SchedulesEntity);
+    const currentWeek = date.isoWeek() % 2 == 0 ? 1: 2;
 
-    return getRepository(SchedulesEntity).find({ relations: ["Group", "Teacher", "Subject"], where: { Date: date.format('YYYY-MM-DD') } });
+    const schedulesMain = await repository.find({ relations: ["Group", "Teacher", "Subject"], where: { Weekday: date.weekday(), DateEnd: MoreThanOrEqual(date.toISOString()), DateStart: LessThanOrEqual(date.toISOString()), TypeOfWeek: 0} })
+    const schedulesTypeOfWeek = await repository.find({ relations: ["Group", "Teacher", "Subject"], where: { Weekday: date.weekday(), DateEnd: MoreThanOrEqual(date.toISOString()), DateStart: LessThanOrEqual(date.toISOString()), TypeOfWeek: currentWeek} })
+
+    return [...schedulesMain, ...schedulesTypeOfWeek].sort((a, b) => a.Pair - b.Pair);
   }
 }

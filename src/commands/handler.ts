@@ -3,10 +3,12 @@ import { Command } from './Commands';
 import { UsersEntity } from '../database/entities/Users.entity';
 import Context from "telegraf";
 import { getConfig } from "../config/config";
+import { sendOrEditMessage } from "../messages";
 
 // @ts-ignore
 const messageHandler = async (ctx: Context): Promise<void> => {
   if (ctx.message.text.toString()[0] !== getConfig().prefix) return;
+
   const [commandName, ...args] = ctx.message.text.substring(1).split(/\s+/g);
   const command = Command[commandName.toLowerCase()];
 
@@ -17,21 +19,23 @@ const messageHandler = async (ctx: Context): Promise<void> => {
     user = (await UsersEntity.getOrCreateUser(
       ctx.message.chat.id,
     )) as UsersEntity;
-
-  } else {
-    user = null;
-  }
+  } else user = null;
 
   try {
     await command.execute(ctx, user, ...args);
   } catch (e) {
-    ctx.telegram.sendMessage(ctx.message.chat.id, e).catch(() => {});
+    await sendOrEditMessage(ctx, e, {
+      reply_markup: {
+        inline_keyboard: [[{ text: '⬅️В главное меню', callback_data: `/start` }]],
+      },
+    }).catch(() => {});
   }
 };
 
 // @ts-ignore
 const callbackHandler = async (ctx: Context): Promise<void> => {
   if (ctx.callbackQuery.data.toString()[0] !== getConfig().prefix) return;
+
   const [commandName, ...args] = ctx.callbackQuery.data.substring(1).split(/\s+/g);
   const command = Command[commandName.toLowerCase()];
 
@@ -51,7 +55,11 @@ const callbackHandler = async (ctx: Context): Promise<void> => {
   try {
     await command.execute(ctx, user, ...args);
   } catch (e) {
-    ctx.telegram.sendMessage(ctx.callbackQuery.message.chat.id, e).catch(() => {});
+    await sendOrEditMessage(ctx, e, {
+      reply_markup: {
+        inline_keyboard: [[{ text: '⬅️В главное меню', callback_data: `/start` }]],
+      },
+    }).catch(() => {});
   }
 };
 
