@@ -6,4 +6,8 @@
 
 export const devConfig = {
   prefix: '/',
+
+  chats: {
+    logChat: '-557749041',
+  },
 };

@@ -57,6 +57,6 @@ export class ReplacementsEntity {
   public static async getReplacements(dateFuture: number): Promise<ReplacementsEntity[]> {
     const date = moment().add(dateFuture, "d");
 
-    return getRepository(ReplacementsEntity).find({ relations: ["Group"], where: { Date: date.format('YYYY-MM-DD') } });
+    return getRepository(ReplacementsEntity).find({ relations: ['Group'], where: { Date: date.format('YYYY-MM-DD') } });
   }
 }
