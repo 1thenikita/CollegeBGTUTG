@@ -41,7 +41,7 @@ export class SchedulesEntity {
   Cabinet!: string;
 
   @Column('int')
-  TypeOfWeek!: boolean;
+  TypeOfWeek!: number;
 
   @Column('date')
   DateStart!: Date;
