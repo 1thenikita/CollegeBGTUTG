@@ -19,7 +19,6 @@ services:
       - DB_PASSWORD
       - DB_DATABASE
       - DB_CHARSET
-      - DB_CHARSET
 
     # Traefik labels
     labels:
