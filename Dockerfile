@@ -1,6 +1,6 @@
 FROM node:17
 
-WORKDIR /bot
+WORKDIR /bots/collegebgtutg
 
 COPY package*.json ./
 COPY tsconfig.json ./
