@@ -18,7 +18,6 @@ services:
       - DB_USER
       - DB_PASSWORD
       - DB_DATABASE
-      - DB_CHARSET
 
     # Traefik labels
     labels:
@@ -28,7 +27,3 @@ services:
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-secure.rule=Host(`${COMPOSE_PROJECT_NAME}.${DOMAIN}`)"
       - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-secure.service=${COMPOSE_PROJECT_NAME}"
       - "traefik.http.services.${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=${PORT}"
-
-networks:
-  proxy:
-    external: true
