@@ -1,9 +1,35 @@
 version: '3'
-
 services:
-  app:
+
+  collegebgtuts:
+    command: 'npm run start'
+    #    ports:
+    #     - "3000:3000"
     build: ./
-    env_file:
-      - ./.env
-    ports:
-      - 3000:3000
+    restart: 'on-failure'
+    networks:
+      - proxy
+    environment:
+      - TOKEN
+      - PORT
+      - TOKEN_API_PC
+      - DB_TYPE
+      - DB_HOST
+      - DB_USER
+      - DB_PASSWORD
+      - DB_DATABASE
+      - DB_CHARSET
+      - DB_CHARSET
+
+    # Traefik labels
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-secure.entrypoints=websecure"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-secure.rule=Host(`${COMPOSE_PROJECT_NAME}.${DOMAIN}`)"
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-secure.service=${COMPOSE_PROJECT_NAME}"
+      - "traefik.http.services.${COMPOSE_PROJECT_NAME}.loadbalancer.server.port=${PORT}"
+
+networks:
+  proxy:
+    external: true

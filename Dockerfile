@@ -1,13 +1,13 @@
-FROM node:12
+FROM node:17
 
 WORKDIR /bot
 
 COPY package*.json ./
 COPY tsconfig.json ./
-
-COPY node_modules ./node_modules
 COPY src ./src
+RUN ls -a
 
+RUN npm install
 RUN npm run build
 
 ENV TZ=Europe/Moscow
