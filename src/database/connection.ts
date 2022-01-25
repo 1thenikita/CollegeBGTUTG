@@ -12,11 +12,11 @@ import '../API/API';
 import {SchedulesEntity} from "./entities/Schedules.entity";
 
 createConnection({
-    type: process.env.BD_TYPE as 'mssql',
-    host: process.env.BD_HOST,
-    username: process.env.BD_USER,
-    password: process.env.BD_PASSWORD,
-    database: process.env.BD_DATABASE,
+    type: process.env.DB_TYPE as 'mssql',
+    host: process.env.DB_HOST,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
     synchronize: true,
     logging: false,
     entities: [
