@@ -1,5 +1,5 @@
 {
-  "name": "tbot",
+  "name": "collegebgtuts",
   "version": "1.0.0",
   "description": "College BGTU Telegram Bot",
   "main": "src/index.ts",

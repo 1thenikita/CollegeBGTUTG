@@ -1,9 +1,10 @@
 FROM node:17
 
-WORKDIR /bots/collegebgtutg
+WORKDIR /bot
 
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY types.d.ts ./
 COPY src ./src
 RUN ls -a
 
