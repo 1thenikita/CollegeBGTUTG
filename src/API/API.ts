@@ -55,6 +55,20 @@ app.get('/tu/college/v1.0/group/all', async (req, res) => {
   }).status(200);
 });
 
+app.get('/tu/college/v1.0/replacements/all', async (req, res) => {
+  const replacements = await getRepository(ReplacementsEntity).find();
+  if (!replacements)
+    return res.json({
+      success: false,
+      message: 'No find replacements',
+    }).status(404);
+
+  res.json({
+    success: true,
+    message: replacements,
+  }).status(200);
+});
+
 app.get('/tu/college/v1.0/user/:id', async (req, res) => {
   if (!req.params.id)
     return res.json({
